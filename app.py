@@ -7,8 +7,8 @@ st.title('Calculadora de IMC (Índice de Massa Corporal)')
 # usar a sidebar deixa a interface mais limpa
 st.sidebar.header('Insira seus dados')
 nome = st.sidebar.text_input('Seu nome')
-peso = st.sidebar.number_input('Seu peso (kg)', min_value=0.1, format="%.2f")
-altura_cm = st.sidebar.number_input('Sua altura (cm)', min_value=0.1, format="%.1f")
+peso = st.sidebar.number_input('Seu peso (kg)', min_value=0.0, format="%.2f")
+altura_cm = st.sidebar.number_input('Sua altura (cm)', min_value=0.0, format="%.1f")
 
 # --- lógica do aplicativo ---
 # botão para iniciar o cálculo
@@ -67,3 +67,4 @@ if st.sidebar.button('Calcular IMC'):
         else:
             st.balloons()
             st.info('Parabéns, você está na faixa de peso ideal!')
+
