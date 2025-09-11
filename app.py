@@ -1,49 +1,69 @@
-# app.py
 import streamlit as st
 
-st.set_page_config(page_title="Calculadora de IMC", page_icon="💪")
+# título do aplicativo
+st.title('Calculadora de IMC (Índice de Massa Corporal)')
 
-st.title("Calculadora de IMC")
+# --- entradas do usuário na barra lateral (sidebar) ---
+# usar a sidebar deixa a interface mais limpa
+st.sidebar.header('Insira seus dados')
+nome = st.sidebar.text_input('Seu nome')
+peso = st.sidebar.number_input('Seu peso (kg)', min_value=0.1, format="%.2f")
+altura_cm = st.sidebar.number_input('Sua altura (cm)', min_value=0.1, format="%.1f")
 
-# Campos de entrada na barra lateral ou no corpo principal
-nome = st.text_input("Digite seu nome:")
-peso_str = st.text_input("Digite seu peso (kg):")
-altura_str = st.text_input("Digite sua altura (cm):")
+# --- lógica do aplicativo ---
+# botão para iniciar o cálculo
+if st.sidebar.button('Calcular IMC'):
 
-if st.button("Calcular IMC"):
-    # --- Validação dos dados ---
-    if not nome or not peso_str or not altura_str:
-        st.error("Por favor, preencha todos os campos.")
+    # validação dos inputs
+    if not nome:
+        st.error('Por favor, digite seu nome.')
+    elif peso <= 0 or altura_cm <= 0:
+        st.error('Por favor, insira valores válidos e positivos para peso и altura.')
     else:
-        try:
-            peso = float(peso_str.replace(',', '.'))
-            altura_cm = float(altura_str.replace(',', '.'))
-            if peso <= 0 or altura_cm <= 0:
-                raise ValueError
-            
-            # --- Lógica de cálculo ---
-            altura_m = altura_cm / 100
-            imc = peso / (altura_m ** 2)
+        # cálculos (mesma lógica do seu código original)
+        altura_m = altura_cm / 100
+        imc = peso / (altura_m ** 2)
+        
+        # classificação do IMC
+        if imc < 18.5:
+            classificacao = 'Abaixo do peso'
+            cor = 'orange'
+        elif imc < 25:
+            classificacao = 'Peso normal'
+            cor = 'green'
+        elif imc < 30:
+            classificacao = 'Sobrepeso'
+            cor = 'orange'
+        elif imc < 35:
+            classificacao = 'Obesidade grau I'
+            cor = 'red'
+        elif imc < 40:
+            classificacao = 'Obesidade grau II'
+            cor = 'red'
+        else:
+            classificacao = 'Obesidade grau III'
+            cor = 'red'
 
-            # Classificação
-            if imc < 18.5: classificacao = 'Abaixo do peso'
-            elif imc < 25: classificacao = 'Peso normal'
-            elif imc < 30: classificacao = 'Sobrepeso'
-            elif imc < 35: classificacao = 'Obesidade grau I'
-            elif imc < 40: classificacao = 'Obesidade grau II'
-            else: classificacao = 'Obesidade grau III'
+        # exibição dos resultados
+        st.subheader(f'Olá, {nome}! Aqui está o seu resultado:')
 
-            # --- Exibição do resultado ---
-            st.success(f"Olá, {nome}!")
-            st.metric(label="Seu IMC é", value=f"{imc:.2f}", delta=classificacao)
+        # exibe o IMC e a classificação com cores
+        st.metric(label="Seu IMC é", value=f"{imc:.2f}")
 
-            # Meta de peso
-            if imc < 18.5:
-                peso_meta = abs(peso - 18.5 * altura_m**2)
-                st.info(f'Para atingir o "Peso normal", você precisa ganhar {peso_meta:.2f} kg.')
-            elif imc >= 25:
-                peso_meta = abs(peso - 25 * altura_m**2)
-                st.info(f'Para atingir o "Peso normal", você precisa perder {peso_meta:.2f} kg.')
+        if cor == 'green':
+            st.success(f"**Classificação:** {classificacao}")
+        elif cor == 'orange':
+            st.warning(f"**Classificação:** {classificacao}")
+        else:
+            st.error(f"**Classificação:** {classificacao}")
 
-        except ValueError:
-            st.error("Peso e altura devem ser números válidos e positivos.")
+        # mensagem sobre a meta de peso
+        if imc < 18.5:
+            peso_meta_ganhar = abs(peso - 18.5 * altura_m**2)
+            st.info(f'Para atingir a faixa de "Peso normal", você precisaria **ganhar** cerca de **{peso_meta_ganhar:.2f} kg**.')
+        elif imc >= 25:
+            peso_meta_perder = abs(peso - 25 * altura_m**2)
+            st.info(f'Para atingir a faixa de "Peso normal", você precisaria **perder** cerca de **{peso_meta_perder:.2f} kg**.')
+        else:
+            st.balloons()
+            st.info('Parabéns, você está na faixa de peso ideal!')
